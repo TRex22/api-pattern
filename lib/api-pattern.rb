@@ -1,11 +1,11 @@
 require 'httparty'
-require 'nokogiri'
+# require 'nokogiri' # Only if needed
 
 require 'api-pattern/version'
 require 'api-pattern/constants'
 
 require 'api-pattern/client'
 
-module EskomSePush
+module ApiPattern
   class Error < StandardError; end
 end

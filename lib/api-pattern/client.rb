@@ -1,9 +1,12 @@
 module ApiPattern
   class Client
-    attr_reader :token, :base_path, :port
+    include ::ApiPattern::Constants
 
-    def initialize(token:, base_path: BASE_URI, port: BASE_PORT)
+    attr_reader :token, :base_path, :port, :content_type
+
+    def initialize(token:, content_type:, base_path:, port: BASE_PORT)
       @token = token
+      @content_type = content_type
       @base_path = base_path
       @port = port
     end
@@ -22,14 +25,17 @@ module ApiPattern
     def unauthorised_and_send(http_method:, path:, payload: {}, params: {})
       start_time = get_micro_second_time
 
-      response = HTTParty.send(
-        http_method.to_sym,
-        construct_base_path(path, params),
-        body: payload,
-        headers: { 'Content-Type': 'application/json' },
-        port: port,
-        format: :json
-      )
+      response =
+        ::HTTParty.send(
+          http_method.to_sym,
+          construct_base_path(path, params),
+          body: payload,
+          headers: {
+            "Content-Type": @content_type,
+          },
+          port: port,
+          format: :json
+        )
 
       end_time = get_micro_second_time
       construct_response_object(response, path, start_time, end_time)
@@ -38,14 +44,18 @@ module ApiPattern
     def authorise_and_send(http_method:, path:, payload: {}, params: {})
       start_time = get_micro_second_time
 
-      response = HTTParty.send(
-        http_method.to_sym,
-        construct_base_path(path, params),
-        body: payload,
-        headers: { 'Content-Type': 'application/json', Token: token },
-        port: port,
-        format: :json
-      )
+      response =
+        ::HTTParty.send(
+          http_method.to_sym,
+          construct_base_path(path, params),
+          body: payload,
+          headers: {
+            "Content-Type": @content_type,
+            Token: token,
+          },
+          port: port,
+          format: :json
+        )
 
       end_time = get_micro_second_time
       construct_response_object(response, path, start_time, end_time)
@@ -53,9 +63,9 @@ module ApiPattern
 
     def construct_response_object(response, path, start_time, end_time)
       {
-        'body' => parse_body(response, path),
-        'headers' => response.headers,
-        'metadata' => construct_metadata(response, start_time, end_time)
+        "body" => parse_body(response, path),
+        "headers" => response.headers,
+        "metadata" => construct_metadata(response, start_time, end_time)
       }
     end
 
@@ -63,9 +73,9 @@ module ApiPattern
       total_time = end_time - start_time
 
       {
-        'start_time' => start_time,
-        'end_time' => end_time,
-        'total_time' => total_time
+        "start_time" => start_time,
+        "end_time" => end_time,
+        "total_time" => total_time
       }
     end
 
@@ -90,7 +100,7 @@ module ApiPattern
     end
 
     def get_micro_second_time
-      (Time.now.to_f * 1000000).to_i
+      (Time.now.to_f * 1_000_000).to_i
     end
 
     def construct_base_path(path, params)
@@ -104,7 +114,7 @@ module ApiPattern
     end
 
     def process_params(params)
-      params.keys.map { |key| "#{key}=#{params[key]}" }.join('&')
+      params.keys.map { |key| "#{key}=#{params[key]}" }.join("&")
     end
   end
 end

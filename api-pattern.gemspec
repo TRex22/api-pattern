@@ -3,7 +3,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require "api-pattern/version"
 
 Gem::Specification.new do |spec|
-  spec.name          = "ApiPattern"
+  spec.name          = "api_pattern"
   spec.version       = ApiPattern::VERSION
   spec.authors       = ["trex22"]
   spec.email         = ["contact@jasonchalom.com"]
@@ -27,11 +27,11 @@ Gem::Specification.new do |spec|
 
   # Development dependancies
   spec.add_development_dependency "rake", "~> 13.0.6"
-  spec.add_development_dependency "minitest", "~> 5.15.0"
+  spec.add_development_dependency "minitest", "~> 5.18.0"
   spec.add_development_dependency "minitest-focus", "~> 1.3.1"
-  spec.add_development_dependency "minitest-reporters", "~> 1.5.0"
-  spec.add_development_dependency "timecop", "~> 0.9.1"
-  spec.add_development_dependency "mocha", "~> 1.13.0"
-  spec.add_development_dependency "pry", "~> 0.14.1"
-  spec.add_development_dependency "webmock", "~> 3.14.0"
+  spec.add_development_dependency "minitest-reporters", "~> 1.6.0"
+  spec.add_development_dependency "timecop", "~> 0.9.6"
+  spec.add_development_dependency "mocha", "~> 2.0.2"
+  spec.add_development_dependency "pry", "~> 0.14.2"
+  spec.add_development_dependency "webmock", "~> 3.18.1"
 end
