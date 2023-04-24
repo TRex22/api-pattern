@@ -26,6 +26,14 @@ Or install it yourself as:
 
 ```
 
+## Upgrades
+Make sure to run:
+
+```
+bundle lock --add-platform x86_64-linux
+bundle lock --add-platform ruby
+```
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake test` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
