@@ -24,13 +24,12 @@ module ApiPattern
       @time = Time.now
 
       Timecop.freeze(@time) do
-        @client =
-          ExampleClient.new(
-            token: "abc123",
-            content_type: "application/json",
-            base_path: "https://example.com",
-            port: 443
-          )
+        @client = ExampleClient.new(
+          token: "abc123",
+          content_type: "application/json",
+          base_path: "https://example.com",
+          port: 443
+        )
       end
     end
 

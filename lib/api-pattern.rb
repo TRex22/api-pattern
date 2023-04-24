@@ -1,10 +1,12 @@
-require 'httparty'
-# require 'nokogiri' # Only if needed
+require "httparty"
+require "nokogiri"
 
-require 'api-pattern/version'
-require 'api-pattern/constants'
+require "api-pattern/class_helpers"
 
-require 'api-pattern/client'
+require "api-pattern/version"
+require "api-pattern/constants"
+
+require "api-pattern/client"
 
 module ApiPattern
   class Error < StandardError; end
