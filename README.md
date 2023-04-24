@@ -19,11 +19,75 @@ Or install it yourself as:
 
 ## Usage
 
+### Only unauthorised calls
 ```ruby
   require 'api-pattern'
-  client = ApiPattern::Client.new(token: 'Your token here')
 
+  class ExampleClient < ApiClient::Client
+    def self.compatible_api_version
+      'v1'
+    end
 
+    def self.api_version
+      'v1 2023-04-24'
+    end
+
+    def example_unauthorised_get
+      unauthorised_and_send(http_method: :get, path: "messages")
+    end
+
+    def example_unauthorised_post(payload)
+      unauthorised_and_send(http_method: :post, path: "users", payload: payload)
+    end
+  end
+
+  client = ExampleClient.new(
+    content_type: "application/json",
+    base_path: "https://example.com",
+    port: 443
+  )
+
+  client.example_unauthorised_get
+```
+
+### Using authorised calls
+```ruby
+  require 'api-pattern'
+
+  class ExampleClient < ApiClient::Client
+    def self.compatible_api_version
+      'v1'
+    end
+
+    def self.api_version
+      'v1 2023-04-24'
+    end
+
+    def example_authorised_get
+      authorised_and_send(http_method: :get, path: "messages")
+    end
+
+    def example_authorised_post(payload)
+      authorised_and_send(http_method: :post, path: "users", payload: payload)
+    end
+  end
+
+  client = ExampleClient.new(
+    token: "abc123",
+    content_type: "application/json",
+    base_path: "https://example.com",
+    port: 443
+  )
+
+  client.example_unauthorised_get
+```
+
+## Upgrades
+Make sure to run:
+
+```
+bundle lock --add-platform x86_64-linux
+bundle lock --add-platform ruby
 ```
 
 ## Development

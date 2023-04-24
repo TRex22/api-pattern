@@ -1,0 +1,24 @@
+name: Ruby Tests
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.2.2
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: vendor/bundle
+        key: v1-${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          v1-${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+    - name: Install dependencies
+      run: bundle install
+    - name: Run tests
+      run: bundle exec rake test
