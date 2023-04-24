@@ -29,7 +29,7 @@ module ApiPattern
         ::HTTParty.send(
           http_method.to_sym,
           construct_base_path(path, params),
-          body: payload,
+          body: process_payload(payload),
           headers: {
             "Content-Type": @content_type,
           },
@@ -110,6 +110,14 @@ module ApiPattern
         constructed_path
       else
         "#{constructed_path}?#{process_params(params)}"
+      end
+    end
+
+    def process_payload(payload)
+      if @content_type.to_s.downcase.include?("json")
+        payload.to_json
+      else
+        payload
       end
     end
 
