@@ -7,9 +7,7 @@ class Hash
   end
 
   def with_indifferent_access!
-    keys.each do |key|
-      resolve(key)
-    end
+    keys.each { |key| resolve(key) }
 
     self
   end
@@ -39,7 +37,7 @@ class String
   end
 
   def blank?
-    nil? || self == "" || self == ''
+    nil? || self == "" || self == ""
   end
 end
 
@@ -49,6 +47,6 @@ class NilClass
   end
 
   def blank?
-    nil? || self == "" || self == ''
+    nil?
   end
 end

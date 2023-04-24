@@ -31,9 +31,20 @@ module ApiPattern
     end
   end
 
+  class ExampleBasicAuthClient < Client
+    def example_authorised_get
+      authorise_and_send(http_method: :get, path: "messages")
+    end
+
+    def example_authorised_post(payload)
+      authorise_and_send(http_method: :post, path: "users", payload: payload)
+    end
+  end
+
   class TestClient < Minitest::Test
     def setup
       @time = Time.now
+      @token = "abc123"
 
       Timecop.freeze(@time) do
         @unauthed_client = ExampleClient.new(
@@ -43,7 +54,15 @@ module ApiPattern
         )
 
         @token_auth_client = ExampleTokenAuthClient.new(
-          token: "abc123",
+          token: @token,
+          content_type: "application/json",
+          base_path: "https://example.com",
+          port: 443
+        )
+
+        @basic_auth_client = ExampleBasicAuthClient.new(
+          username: "abc123",
+          password: "abc123",
           content_type: "application/json",
           base_path: "https://example.com",
           port: 443
@@ -63,14 +82,14 @@ module ApiPattern
       end
     end
 
-    def test_authorised_and_send_get_request_with_token
+    def test_authorised_and_send_get_request_with_basic_auth
       Timecop.freeze(@time) do
         response = {
           body: {
             message: "Success"
           },
           headers: {
-            "Content-Type" => ["application/json"]
+            "Content-Type" => ["application/json"],
           },
           metadata: {
             start_time: (@time.to_f * 1_000_000).to_i,
@@ -79,12 +98,88 @@ module ApiPattern
           }
         }
 
-        stub_request(:get, "https://example.com/messages").to_return(
-          status: 200,
-          body: { message: "Success" }.to_json,
+        stub_request(:get, "https://example.com/messages").with(
+            headers: {
+              "Content-Type" => "application/json",
+              "Authorization"=>"Basic Og=="
+            },
+          ).to_return(
+            status: 200,
+            body: { message: "Success" }.to_json,
+            headers: {
+              "Content-Type" => "application/json",
+            }
+        )
+
+        assert_equal response.with_indifferent_access,
+          @basic_auth_client.example_authorised_get.with_indifferent_access
+      end
+    end
+
+    def test_authorised_and_send_post_request_with_basic_auth
+      Timecop.freeze(@time) do
+        payload = { name: "John Doe" }
+
+        response = {
+          body: {
+            id: 123
+          },
+          headers: {
+            "Content-Type" => ["application/json"],
+          },
+          metadata: {
+            start_time: (@time.to_f * 1_000_000).to_i,
+            end_time: (@time.to_f * 1_000_000).to_i,
+            total_time: 0
+          }
+        }
+
+        stub_request(:post, "https://example.com/users").with(
+          body: payload.to_json,
+          headers: {
+            "Content-Type" => "application/json",
+            "Authorization"=>"Basic Og=="
+          },
+        ).to_return(
+          status: 201,
+          body: { id: 123 }.to_json,
           headers: {
             "Content-Type" => "application/json"
+          },
+        )
+
+        assert_equal response.with_indifferent_access,
+          @basic_auth_client.example_authorised_post(payload).with_indifferent_access
+      end
+    end
+
+    def test_authorised_and_send_get_request_with_token
+      Timecop.freeze(@time) do
+        response = {
+          body: {
+            message: "Success"
+          },
+          headers: {
+            "Content-Type" => ["application/json"],
+          },
+          metadata: {
+            start_time: (@time.to_f * 1_000_000).to_i,
+            end_time: (@time.to_f * 1_000_000).to_i,
+            total_time: 0
           }
+        }
+
+        stub_request(:get, "https://example.com/messages").with(
+            headers: {
+              "Content-Type" => "application/json",
+              Token: @token,
+            },
+          ).to_return(
+            status: 200,
+            body: { message: "Success" }.to_json,
+            headers: {
+              "Content-Type" => "application/json",
+            }
         )
 
         assert_equal response.with_indifferent_access,
@@ -101,7 +196,7 @@ module ApiPattern
             id: 123
           },
           headers: {
-            "Content-Type" => ["application/json"]
+            "Content-Type" => ["application/json"],
           },
           metadata: {
             start_time: (@time.to_f * 1_000_000).to_i,
@@ -113,7 +208,8 @@ module ApiPattern
         stub_request(:post, "https://example.com/users").with(
           body: payload.to_json,
           headers: {
-            "Content-Type" => "application/json"
+            "Content-Type" => "application/json",
+            Token: @token,
           },
         ).to_return(
           status: 201,

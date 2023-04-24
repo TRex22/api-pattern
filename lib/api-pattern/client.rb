@@ -55,16 +55,19 @@ module ApiPattern
     def authorise_and_send(http_method:, path:, payload: {}, params: {}, format: :json)
       start_time = get_micro_second_time
 
-      response = ::HTTParty.send(
-        http_method.to_sym,
-        construct_base_path(path, params),
+      send_params = {
         body: process_payload(payload),
         headers: {
-          "Content-Type": @content_type,
-          Token: token,
+          "Content-Type": @content_type
         },
         port: port,
         format: format,
+      }
+
+      response = ::HTTParty.send(
+        http_method.to_sym,
+        construct_base_path(path, params),
+        **configure_auth(send_params)
       )
 
       end_time = get_micro_second_time
@@ -159,6 +162,23 @@ module ApiPattern
         @key = key
         @secret = secret
       end
+    end
+
+    # Need to use symbols here to HTTParty named parameters
+    def configure_auth(send_params)
+      if @auth_type == "token"
+        headers = send_params[:headers]
+        headers["Token"] = @auth["token"]
+        send_params[:headers] = headers
+      elsif @auth_type == "basic"
+        send_params[:basic_auth] = @auth # { username: "", password: "" }
+      end
+
+      # TODO: Using aliases for the sending
+      # TODO: Basic auth via body
+      # TODO: Separate login flow
+
+      send_params
     end
 
     # https://stackoverflow.com/questions/913349/what-is-the-best-way-to-create-alias-to-attributes-in-ruby
