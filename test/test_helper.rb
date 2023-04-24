@@ -40,8 +40,3 @@ Pry::Prompt.add "pry_env", "", %w(> *) do |target_self, nest_level, pry, sep|
 end
 
 Pry.config.prompt = Pry::Prompt.all["pry_env"]
-
-################################################################################
-# Hash Helpers
-################################################################################
-
