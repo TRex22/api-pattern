@@ -21,9 +21,25 @@ Or install it yourself as:
 
 ```ruby
   require 'api-pattern'
-  client = ApiPattern::Client.new(token: 'Your token here')
 
+  class ExampleClient < ApiClient::Client
+    def example_unauthorised_get
+      unauthorised_and_send(http_method: :get, path: "messages")
+    end
 
+    def example_unauthorised_post(payload)
+      unauthorised_and_send(http_method: :post, path: "users", payload: payload)
+    end
+  end
+
+  client = ExampleClient.new(
+    token: "abc123",
+    content_type: "application/json",
+    base_path: "https://example.com",
+    port: 443
+  )
+
+  client.example_unauthorised_get
 ```
 
 ## Upgrades
