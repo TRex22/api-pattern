@@ -22,7 +22,7 @@ module ApiPattern
 
     private
 
-    def unauthorised_and_send(http_method:, path:, payload: {}, params: {})
+    def unauthorised_and_send(http_method:, path:, payload: {}, params: {}, format: :json)
       start_time = get_micro_second_time
 
       response =
@@ -34,14 +34,14 @@ module ApiPattern
             "Content-Type": @content_type,
           },
           port: port,
-          format: :json
+          format: format,
         )
 
       end_time = get_micro_second_time
       construct_response_object(response, path, start_time, end_time)
     end
 
-    def authorise_and_send(http_method:, path:, payload: {}, params: {})
+    def authorise_and_send(http_method:, path:, payload: {}, params: {}, format: :json)
       start_time = get_micro_second_time
 
       response =
@@ -54,7 +54,7 @@ module ApiPattern
             Token: token,
           },
           port: port,
-          format: :json
+          format: format,
         )
 
       end_time = get_micro_second_time

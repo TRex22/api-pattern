@@ -23,6 +23,14 @@ Or install it yourself as:
   require 'api-pattern'
 
   class ExampleClient < ApiClient::Client
+    def self.compatible_api_version
+      'v1'
+    end
+
+    def self.api_version
+      'v1 2023-04-24'
+    end
+
     def example_unauthorised_get
       unauthorised_and_send(http_method: :get, path: "messages")
     end

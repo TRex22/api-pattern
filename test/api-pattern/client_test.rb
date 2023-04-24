@@ -2,6 +2,14 @@ require "test_helper"
 
 module ApiPattern
   class ExampleClient < Client
+    # def self.compatible_api_version
+    #   'v1'
+    # end
+
+    # def self.api_version
+    #   'v1 2023-04-24'
+    # end
+
     def example_unauthorised_get
       unauthorised_and_send(http_method: :get, path: "messages")
     end
@@ -23,6 +31,18 @@ module ApiPattern
             base_path: "https://example.com",
             port: 443
           )
+      end
+    end
+
+    def test_compatible_api_version_raises_not_implemented_error
+      assert_raises NotImplementedError do
+        @client.class.compatible_api_version
+      end
+    end
+
+    def test_api_version_raises_not_implemented_error
+      assert_raises NotImplementedError do
+        @client.class.api_version
       end
     end
 
