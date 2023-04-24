@@ -151,17 +151,22 @@ module ApiPattern
         @auth["username"] = username
         @auth["password"] = password
 
-        @auth_type = "basic"
-        @username = username
-        @password = password
+        basic_auth(username, password)
       elsif key.present? && secret.present?
-        @auth["key"] = key
-        @auth["secret"] = secret
-
-        @auth_type = "oauth" # TODO: may need to work on this one
         @key = key
         @secret = secret
+
+        basic_auth(key, secret)
       end
+    end
+
+    def basic_auth(username, password)
+      @auth["username"] = username
+      @auth["password"] = password
+
+      @auth_type = "basic"
+      @username = username
+      @password = password
     end
 
     # Need to use symbols here to HTTParty named parameters
