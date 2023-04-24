@@ -6,7 +6,7 @@ A base set of ops for all my API clients to make maintenance easier
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'api-pattern'
+gem 'api_pattern'
 ```
 
 And then execute:
