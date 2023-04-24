@@ -4,6 +4,7 @@ PATH
     api_pattern (0.0.1)
       active_attr (~> 0.15.4)
       httparty (~> 0.21.0)
+      nokogiri (~> 1.14.3)
 
 GEM
   remote: https://rubygems.org/

@@ -58,7 +58,7 @@ module ApiPattern
       response = ::HTTParty.send(
         http_method.to_sym,
         construct_base_path(path, params),
-        body: payload,
+        body: process_payload(payload),
         headers: {
           "Content-Type": @content_type,
           Token: token,

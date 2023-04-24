@@ -1,7 +1,4 @@
 $LOAD_PATH.unshift File.expand_path("../../lib", __FILE__)
-require "api-pattern/class_helpers"
-require "api-pattern"
-
 require "minitest/autorun"
 require "minitest/focus"
 require "minitest/reporters"
@@ -11,6 +8,10 @@ require "timecop"
 require "pry"
 
 require "httparty"
+require "nokogiri"
+
+require "api-pattern/class_helpers"
+require "api-pattern"
 
 require "api-pattern/constants"
 require "api-pattern/client"
