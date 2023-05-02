@@ -131,6 +131,8 @@ module ApiPattern
     end
 
     def process_payload(payload)
+      return nil if payload.nil? || payload == {} || payload == ""
+
       if @content_type.to_s.downcase.include?("json")
         payload.to_json
       else
