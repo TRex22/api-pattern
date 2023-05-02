@@ -34,12 +34,12 @@ module ApiPattern
 
     private
 
-    def unauthorised_and_send(http_method:, path:, payload: {}, params: {}, format: :json)
+    def unauthorised_and_send(http_method:, path:, custom_url: nil, payload: {}, params: {}, format: :json)
       start_time = get_micro_second_time
 
       response = ::HTTParty.send(
         http_method.to_sym,
-        construct_base_path(path, params),
+        construct_base_path(path, params, custom_url: custom_url),
         body: process_payload(payload),
         headers: {
           "Content-Type": @content_type,
@@ -52,7 +52,7 @@ module ApiPattern
       construct_response_object(response, path, start_time, end_time)
     end
 
-    def authorise_and_send(http_method:, path:, payload: {}, params: {}, format: :json)
+    def authorise_and_send(http_method:, path:, custom_url: nil, payload: {}, params: {}, format: :json)
       start_time = get_micro_second_time
 
       send_params = {
@@ -66,7 +66,7 @@ module ApiPattern
 
       response = ::HTTParty.send(
         http_method.to_sym,
-        construct_base_path(path, params),
+        construct_base_path(path, params, custom_url: custom_url),
         **configure_auth(send_params)
       )
 
@@ -116,8 +116,12 @@ module ApiPattern
       (Time.now.to_f * 1_000_000).to_i
     end
 
-    def construct_base_path(path, params)
-      constructed_path = "#{base_path}/#{path}"
+    def construct_base_path(path, params, custom_url: nil)
+      if custom_url
+        constructed_path = "#{custom_url}/#{path}"
+      else
+        constructed_path = "#{base_path}/#{path}"
+      end
 
       if params == {}
         constructed_path

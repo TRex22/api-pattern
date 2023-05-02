@@ -12,8 +12,8 @@ module ApiPattern
     #   'v1 2023-04-24'
     # end
 
-    def example_unauthorised_get
-      unauthorised_and_send(http_method: :get, path: "messages")
+    def example_unauthorised_get(custom_url: nil)
+      unauthorised_and_send(http_method: :get, path: "messages", custom_url: custom_url)
     end
 
     def example_unauthorised_post(payload)
@@ -22,8 +22,8 @@ module ApiPattern
   end
 
   class ExampleTokenAuthClient < Client
-    def example_authorised_get
-      authorise_and_send(http_method: :get, path: "messages")
+    def example_authorised_get(custom_url: nil)
+      authorise_and_send(http_method: :get, path: "messages", custom_url: custom_url)
     end
 
     def example_authorised_post(payload)
@@ -153,6 +153,42 @@ module ApiPattern
       end
     end
 
+    def test_authorised_and_send_get_request_with_token_with_custom_url
+      Timecop.freeze(@time) do
+        response = {
+          body: {
+            message: "Success"
+          },
+          headers: {
+            "Content-Type" => ["application/json"],
+          },
+          metadata: {
+            start_time: (@time.to_f * 1_000_000).to_i,
+            end_time: (@time.to_f * 1_000_000).to_i,
+            total_time: 0
+          }
+        }
+
+        stub_request(:get, "https://new.example.com/messages").with(
+            headers: {
+              "Content-Type" => "application/json",
+              Token: @token,
+            },
+          ).to_return(
+            status: 200,
+            body: { message: "Success" }.to_json,
+            headers: {
+              "Content-Type" => "application/json",
+            }
+        )
+
+        assert_equal response.with_indifferent_access,
+          @token_auth_client
+            .example_authorised_get(custom_url: "https://new.example.com")
+            .with_indifferent_access
+      end
+    end
+
     def test_authorised_and_send_get_request_with_token
       Timecop.freeze(@time) do
         response = {
@@ -221,6 +257,37 @@ module ApiPattern
 
         assert_equal response.with_indifferent_access,
           @token_auth_client.example_authorised_post(payload).with_indifferent_access
+      end
+    end
+
+    def test_unauthorised_and_send_get_request_with_custom_url
+      Timecop.freeze(@time) do
+        response = {
+          body: {
+            message: "Success"
+          },
+          headers: {
+            "Content-Type" => ["application/json"]
+          },
+          metadata: {
+            start_time: (@time.to_f * 1_000_000).to_i,
+            end_time: (@time.to_f * 1_000_000).to_i,
+            total_time: 0
+          }
+        }
+
+        stub_request(:get, "https://new.example.com/messages").to_return(
+          status: 200,
+          body: { message: "Success" }.to_json,
+          headers: {
+            "Content-Type" => "application/json"
+          }
+        )
+
+        assert_equal response.with_indifferent_access,
+          @unauthed_client
+            .example_unauthorised_get(custom_url: "https://new.example.com")
+            .with_indifferent_access
       end
     end
 
