@@ -12,6 +12,10 @@ module ApiPattern
     #   'v1 2023-04-24'
     # end
 
+    def example_unauthorised_get_no_path(custom_url: nil)
+      unauthorised_and_send(http_method: :get, path: "", custom_url: custom_url)
+    end
+
     def example_unauthorised_get(custom_url: nil)
       unauthorised_and_send(http_method: :get, path: "messages", custom_url: custom_url)
     end
@@ -257,6 +261,37 @@ module ApiPattern
 
         assert_equal response.with_indifferent_access,
           @token_auth_client.example_authorised_post(payload).with_indifferent_access
+      end
+    end
+
+    def test_unauthorised_and_send_get_request_with_custom_url_wont_scramble_parameters
+      Timecop.freeze(@time) do
+        response = {
+          body: {
+            message: "Success"
+          },
+          headers: {
+            "Content-Type" => ["application/json"]
+          },
+          metadata: {
+            start_time: (@time.to_f * 1_000_000).to_i,
+            end_time: (@time.to_f * 1_000_000).to_i,
+            total_time: 0
+          }
+        }
+
+        stub_request(:get, "https://new.example.com/export?usp=sharing&format=csv").to_return(
+          status: 200,
+          body: { message: "Success" }.to_json,
+          headers: {
+            "Content-Type" => "application/json"
+          }
+        )
+
+        assert_equal response.with_indifferent_access,
+          @unauthed_client
+            .example_unauthorised_get_no_path(custom_url: "https://new.example.com/export?usp=sharing&format=csv")
+            .with_indifferent_access
       end
     end
 

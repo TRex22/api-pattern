@@ -117,13 +117,16 @@ module ApiPattern
     end
 
     def construct_base_path(path, params, custom_url: nil)
-      if custom_url
+      return custom_url if custom_url.present? && path.blank? && params.blank?
+      return base_path if path.blank? && params.blank?
+
+      if custom_url.present?
         constructed_path = "#{custom_url}/#{path}"
       else
         constructed_path = "#{base_path}/#{path}"
       end
 
-      if params == {}
+      if params.blank?
         constructed_path
       else
         "#{constructed_path}?#{process_params(params)}"
@@ -131,7 +134,7 @@ module ApiPattern
     end
 
     def process_payload(payload)
-      return nil if payload.nil? || payload == {} || payload == ""
+      return nil if payload.blank?
 
       if @content_type.to_s.downcase.include?("json")
         payload.to_json
