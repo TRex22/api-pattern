@@ -24,10 +24,10 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 3.0.0"
 
-  spec.add_dependency "httparty", "~> 0.22.0"
-  spec.add_dependency "active_attr", "~> 0.15.4"
-  spec.add_dependency "nokogiri", "~> 1.16.0"
-  spec.add_dependency "csv", "~> 3.3.0"
+  spec.add_dependency "httparty", ">= 0.22.0"
+  spec.add_dependency "active_attr", ">= 0.15.4"
+  spec.add_dependency "nokogiri", ">= 1.16.0"
+  spec.add_dependency "csv", ">= 3.3.0"
 
   # Development dependancies
   spec.add_development_dependency "rake", "~> 13.3.0"
